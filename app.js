@@ -17,9 +17,13 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 
-app.get('/', (req, res) => {
-  res.send('Hello world!');
+app.use(require('./routes'));
+
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({err});
 });
 
 app.listen(PORT, 'localhost');
-console.log(`Listening on port ${PORT}`)
+console.log(`Listening on port ${PORT}`);
