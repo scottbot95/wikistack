@@ -2,9 +2,12 @@ const express = require('express');
 const morgan = require('morgan');
 const {join} = require('path');
 
-const PORT = 1562;
+const models = require('./models');
 
+
+const PORT = 1562;
 const app = express();
+
 
 // logging middleware
 app.use(morgan('dev'));
@@ -25,5 +28,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({err});
 });
 
-app.listen(PORT, 'localhost');
-console.log(`Listening on port ${PORT}`);
+
+const init = async () => {
+  await models.init();
+
+  app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
+  });
+
+};
+
+
+init();
