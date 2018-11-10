@@ -73,4 +73,18 @@ router.post('/:slug', async (req, res, next) => {
   } else { next(); }
 });
 
+router.get('/:slug/delete', async (req, res, next) => {
+  try {
+    const numChanged = await Page.destroy({
+      where: req.params
+    });
+
+    if (numChanged) {
+      res.redirect('/');
+    } else {
+      next();
+    }
+  } catch (err) { next(err); }
+});
+
 module.exports = router;
