@@ -1,9 +1,12 @@
 const express = require('express');
+const Sequelize = require('sequelize');
 
 const views = require('../views');
 const { Page, User } = require('../models');
 
 const router = express.Router();
+
+const Op = Sequelize.Op;
 
 router.get('/', async (req, res) => {
   // res.redirect('/');
@@ -34,6 +37,25 @@ router.get('/add', (req, res) => {
   res.send(views.addPage());
 });
 
+router.get('/search', async (req, res, next) => {
+  const search = req.query.search || '';
+  const searchTerm = {[Op.iLike]: `%${search}%`};
+  try {
+    const results = await Page.findAll({
+      where: {
+        [Op.or]: [
+          {title: searchTerm},
+          {content: searchTerm}
+        ]
+      }
+    });
+
+    res.send(views.searchResults(results, search));
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get('/:slug', async (req, res, next) => {
   try {
     const foundPage = await Page.findOne({
@@ -61,6 +83,10 @@ router.get('/:slug/edit', async (req, res, next) => {
       next();
     }
   } catch (err) { next(err); }
+});
+
+router.get('/:slug/similar', (req, res) => {
+  res.redirect('/wiki/search?search=' + encodeURIComponent(req.params.slug));
 });
 
 router.post('/:slug', async (req, res, next) => {
