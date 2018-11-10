@@ -35,16 +35,42 @@ router.get('/add', (req, res) => {
 });
 
 router.get('/:slug', async (req, res, next) => {
-  const slug = req.params.slug;
-  const foundPage = await Page.findOne({
-    include: [{model: User, as: 'author'}],
-    where: { slug }
+  try {
+    const foundPage = await Page.findOne({
+      include: [{model: User, as: 'author'}],
+      where: req.params
+    });
+    if (foundPage !== null) {
+      res.send(views.wikiPage(foundPage));
+    } else {
+      next();
+    }
+  } catch (err) { next (err); }
+});
+
+router.get('/:slug/edit', async (req, res, next) => {
+  try {
+    const page = await Page.findOne({
+      include: [{model: User, as: 'author'}],
+      where: req.params
+    });
+    if (page) {
+
+      res.send(views.editPage(page));
+    } else {
+      next();
+    }
+  } catch (err) { next(err); }
+});
+
+router.post('/:slug', async (req, res, next) => {
+  const [numChanged] = await Page.update(req.body, {
+    where: req.params
   });
-  if (foundPage !== null) {
-    res.send(views.wikiPage(foundPage));
-  } else {
-    next();
-  }
+
+  if (numChanged) {
+    res.redirect('/wiki/'+req.params.slug);
+  } else { next(); }
 });
 
 module.exports = router;

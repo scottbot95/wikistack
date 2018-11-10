@@ -1,14 +1,24 @@
 const html = require("html-template-tag");
 const layout = require("./layout");
 
-module.exports = (page, author) => layout(html`
+module.exports = (page) => layout(html`
   <h3>Edit a Page</h3>
   <hr>
   <form method="POST" action="/wiki/${page.slug}">
 
-    <div>PLACEHOLDER FOR AUTHOR NAME FIELD</div>
-    
-    <div>PLACEHOLDER FOR AUTHOR EMAIL FIELD</div>
+    <div>
+      <label for="name" class="col-sm-2 control-label">Full Name</label>
+      <div class="col-sm-10">
+        <input type="text" name="name" class="form-control" id="name" value="${page.author.name}"/>
+      </div>
+    </div>
+
+    <div>
+      <label for="email" class="col-sm-2 control-label">Email</label>
+      <div class="col-sm-10">
+        <input type="email" name="email" class="form-control" id="email" value="${page.author.email}"/>
+      </div>
+    </div>
 
     <div class="form-group">
       <label for="title" class="col-sm-2 control-label">Page Title</label>
@@ -17,7 +27,12 @@ module.exports = (page, author) => layout(html`
       </div>
     </div>
 
-    <div>PLACEHOLDER FOR PAGE CONTENT TEXTAREA FIELD</div>
+    <div>
+      <label for="content" class="col-sm-2 control-label">Content</label>
+      <div>
+        <textarea name="content" class="form-control" id="content">${page.content}</textarea>
+      </div>
+    </div>
 
     <div class="form-group">
       <label for="content" class="col-sm-2 control-label">Status</label>
