@@ -6,6 +6,10 @@ const Sequelize = require('sequelize');
 // content => TEXT (so it can store a lot)
 // status => boolean?
 
+function generateSlug(title) {
+  return title.replace(/\s+/g, '_').replace(/\W/g, '');
+}
+
 module.exports = (db) => {
   const Page = db.define('page', {
     title: {
@@ -22,6 +26,13 @@ module.exports = (db) => {
     },
     status: {
       type: Sequelize.ENUM('open', 'closed')
+    }
+  }, {
+    hooks: {
+      beforeValidate: (page) => {
+        page.title = page.title.replace(/[ ]{2,}/g, ' ');
+        page.slug = generateSlug(page.title);
+      }
     }
   });
 

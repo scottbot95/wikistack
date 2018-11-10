@@ -12,7 +12,9 @@ const init = async () => {
     console.log('Database Engaged!');
   });
 
-  await db.sync({force: true});
+  Page.belongsTo(User, {as: 'author'});
+
+  await db.sync({force: false});
 };
 
 
