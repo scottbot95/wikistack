@@ -13,9 +13,9 @@ module.exports = (pages, title='Pages', search='') => layout(html`
   <hr>
   <ul class="list-unstyled">
     <ul>
-      $${pages.map(page => {
+      $${pages.length > 0 ? (pages.map(page => {
         return html`<li><a href="/wiki/${page.slug}">${page.title}</a></li>`;
-      }).join('')}
+      }).join('')) : '<h3>No Pages Found</h3>'}
     </ul>
   </ul>
 `);
