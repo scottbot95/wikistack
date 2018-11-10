@@ -36,7 +36,10 @@ router.get('/add', (req, res) => {
 
 router.get('/:slug', async (req, res, next) => {
   const slug = req.params.slug;
-  const foundPage = await Page.findOne( { where: { slug } } );
+  const foundPage = await Page.findOne({
+    include: [{model: User, as: 'author'}],
+    where: { slug }
+  });
   if (foundPage !== null) {
     res.send(views.wikiPage(foundPage));
   } else {

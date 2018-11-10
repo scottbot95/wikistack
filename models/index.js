@@ -13,8 +13,9 @@ const init = async () => {
   });
 
   await Page.belongsTo(User, {as: 'author'});
+  await User.hasMany(Page, {as: 'author', foreignKey:'authorId'});
 
-  await db.sync({force: true});
+  await db.sync({force: false});
 };
 
 
