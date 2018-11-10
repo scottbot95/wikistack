@@ -15,7 +15,18 @@ router.route('/')
   } catch (err) { next(err); }
 })
 .post(async (req, res, next) => { // POST '/'
-  res.send('post to /users');
+  try {
+    const user = await User.create(req.body);
+    if (user) {
+      res.redirect('/users/'+user.id);
+    } else {
+      next({
+        error:'Failed to create user',
+        reason: 'UNKNOWN',
+        request: req.body
+      });
+    }
+  } catch (err) { next(err); }
 });
 
 router.route('/:userId')
@@ -37,10 +48,34 @@ router.route('/:userId')
   } catch (err) { next(err); }
 })
 .put(async (req, res, next) => {
+  try {
+    const [numChanged] = await User.update(req.body, {
+      where: { id: req.params.userId }
+    });
+
+    if (numChanged) {
+      res.redirect('/users/'+req.params.userId);
+    } else {
+      next();
+    }
+  } catch (err) { next(err); }
+
+
   res.send(`PUT to /users/${req.params.userId}`);
 })
 .delete(async (req, res, next) => {
-  res.send(`DELETE to /users/${req.params.userId}`);
+  try {
+    const numChanged = await User.destroy({
+      where:{
+        id:req.params.userId
+      }
+    });
+    if (numChanged) {
+      res.redirect('/');
+    } else {
+      next();
+    }
+  } catch (err) { next(err); }
 });
 
 module.exports = router;
