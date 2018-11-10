@@ -18,13 +18,14 @@ router.post('/', async (req, res, next) => {
   let {title, content, status, name, email} = req.body;
 
   try {
-    const author = await User.findOrCreate( { where: { name, email } } )[0];
+    const [user] = await User.findOrCreate({
+      where: { name, email }
+    });
 
-    const page = new Page({ title, content, status });
+    const page = await Page.create({ title, content, status });
 
-    await page.save();
+    await page.setAuthor(user);
 
-    await page.setAuthor(author);
     res.redirect(`/wiki/${page.slug}`);
   } catch (err) { next(err); }
 });
