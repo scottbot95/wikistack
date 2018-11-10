@@ -39,7 +39,10 @@ router.get('/add', (req, res) => {
 
 router.get('/search', async (req, res, next) => {
   const search = req.query.search || '';
-  const searchTerm = {[Op.iLike]: `%${search}%`};
+  const searchTerm = {
+    [Op.and]: search.split(' ').map(word => {return {[Op.iLike]: `%${word}%`};})
+  };
+  console.log(searchTerm);
   try {
     const results = await Page.findAll({
       where: {
@@ -85,8 +88,15 @@ router.get('/:slug/edit', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.get('/:slug/similar', (req, res) => {
-  res.redirect('/wiki/search?search=' + encodeURIComponent(req.params.slug));
+router.get('/:slug/similar', async (req, res, next) => {
+  try {
+    const foundPage = await Page.findOne( { where: req.params } );
+    if (foundPage !== null) {
+      res.redirect('/wiki/search?search=' + encodeURIComponent(foundPage.title));
+    } else {
+      next();
+    }
+  } catch (err) { next (err); }
 });
 
 router.post('/:slug', async (req, res, next) => {
